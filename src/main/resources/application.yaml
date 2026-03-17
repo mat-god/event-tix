@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: event-tix
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${SQL_DB_HOST}/${SQL_DB_NAME}
+    username: ${SQL_USER}
+    password: ${SQL_PASS}
