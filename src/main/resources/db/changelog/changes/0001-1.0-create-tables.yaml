@@ -1,0 +1,151 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0001.1-1.0
+      author: mateusz.godlewski
+      changes:
+        - createTable:
+            tableName: venues
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 0001.2-1.0
+      author: mateusz.godlewski
+      changes:
+        - createTable:
+            tableName: sectors
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: venue_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    references: venues(id)
+                    foreignKeyName: fk_sectors_venues
+
+  - changeSet:
+      id: 0001.3-1.0
+      author: mateusz.godlewski
+      changes:
+        - createTable:
+            tableName: seats
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: row_number
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sector_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    references: sectors(id)
+                    foreignKeyName: fk_seats_sectors
+        - addUniqueConstraint:
+            tableName: seats
+            columnNames: sector_id, row_number, number
+            constraintName: uq_seats_sector_row_number
+
+  - changeSet:
+      id: 0001.4-1.0
+      author: mateusz.godlewski
+      changes:
+        - createTable:
+            tableName: events
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: starts_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: venue_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    references: venues(id)
+                    foreignKeyName: fk_events_venues
+
+  - changeSet:
+      id: 0001.5-1.0
+      author: mateusz.godlewski
+      changes:
+        - createTable:
+            tableName: tickets
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: numeric(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_email
+                  type: varchar(100)
+              - column:
+                  name: event_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    references: events(id)
+                    foreignKeyName: fk_tickets_events
+              - column:
+                  name: seat_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    references: seats(id)
+                    foreignKeyName: fk_tickets_seats
+        - addUniqueConstraint:
+            tableName: tickets
+            columnNames: event_id, seat_id
+            constraintName: uq_tickets_event_seat
