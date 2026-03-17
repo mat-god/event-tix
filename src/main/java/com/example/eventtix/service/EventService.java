@@ -1,12 +1,10 @@
 package com.example.eventtix.service;
 
+import com.example.eventtix.dto.CreateEventRequest;
 import com.example.eventtix.model.Event;
 import com.example.eventtix.model.Venue;
 import com.example.eventtix.repository.EventRepository;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +19,17 @@ public class EventService {
   private final TicketService ticketService;
 
   @Transactional
-  public void createEvent(UUID venueId, String eventName, Instant startsAt, BigDecimal price) {
-    Venue venue = venueService.getVenueById(venueId);
+  public Event createEvent(CreateEventRequest createEventRequest) {
+    Venue venue = venueService.getVenueById(createEventRequest.venueId());
 
     Event event = eventRepository.save(Event.builder()
         .venue(venue)
-        .name(eventName)
-        .startsAt(startsAt)
+        .name(createEventRequest.name())
+        .startsAt(createEventRequest.startsAt())
         .build());
 
-    ticketService.createTicketsForEvent(event, price);
+    ticketService.createTicketsForEvent(event, createEventRequest.price());
+
+    return event;
   }
 }
